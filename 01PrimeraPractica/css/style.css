@@ -1,12 +1,12 @@
 *{
     padding: 0;
     margin: 0;
-    color: chartreuse;
+    color: rgb(90, 16, 230);
     text-align: center;
 }
 
 html, body{
-    background-color: darkblue;
+    background-color: rgb(63, 194, 113);
 }
 
 .main_container{
@@ -30,5 +30,5 @@ article, aside{
 }
 
 nav, footer, section{
-    background-color: darkslategray;
+    background-color: rgb(199, 35, 62);
 }
