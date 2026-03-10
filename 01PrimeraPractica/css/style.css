@@ -1,0 +1,34 @@
+*{
+    padding: 0;
+    margin: 0;
+    color: chartreuse;
+    text-align: center;
+}
+
+html, body{
+    background-color: darkblue;
+}
+
+.main_container{
+    border: 7px solid rgb(103, 239, 159);
+    border-radius: 50px;
+    margin: 2rem;
+    background-color: rgb(227, 111, 229);
+}
+
+nav, section, footer, aside, article{
+    border: 4px solid rgb(255, 0, 0);
+    margin: 1rem;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+article, aside{
+    width: 40%;
+    display: inline-block;
+    height: 300px;
+}
+
+nav, footer, section{
+    background-color: darkslategray;
+}
