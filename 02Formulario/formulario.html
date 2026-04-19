@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Personal Serrano Jiménez Jostin Kiroshi</title>
+    <link rel="stylesheet" href="./css/estilo.css">
+    <script src="./js/validarformulario.js"></script> 
+</head>
+<body>
+    <div class="container-main">
+        <header class="container-nav">
+            <nav>
+                <h1>INFORMACIÓN SOBRE FORMULARIOS</h1>
+            </nav>
+        </header>
+
+        <div class="container-body">
+            <article>
+                <p>
+                    Todos los formularios que están en internet tienen métodos de programación por defecto. 
+                    Estos métodos nos sirven para poder hacer las acciones principales como son: Acciones para 
+                    poderse conectar con los servicios, a través de la Arquitectura Cliente Servidor. 
+                    Todos los formularios utilizan el método GET por defecto, y el segundo método principal es POST.
+                </p>
+            </article>
+
+            <aside>
+                <h2>Registro</h2>
+                <hr><br>
+                <form name="formulario" id="formulario" onsubmit="return validar(this)">
+                    <label for="nombre">Nombre:</label><br>
+                    <input type="text" name="nombre" id="nombre" placeholder="Nombre completo"><br>
+
+                    <label for="edad">Edad:</label><br>
+                    <input type="text" name="edad" id="edad" placeholder="Tu edad"><br>
+
+                    <label for="email">Email:</label><br>
+                    <input type="text" name="email" id="email" placeholder="Correo electrónico"><br><br>
+
+                    <input type="submit" class="btn-submit" name="enviar" value="Enviar Registro"><br>
+                    <input type="reset" class="btn-reset" name="borrar" value="Borrar Datos">
+                </form>
+            </aside>
+        </div>
+
+        <footer class="container-footer">
+            <p>Serrano Jiménez Jostin Kiroshi</p>
+        </footer>
+    </div>
+</body>
+</html>
