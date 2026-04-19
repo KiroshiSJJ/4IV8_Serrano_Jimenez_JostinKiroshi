@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicios Algoritmos - Validaciones</title>
+    <link rel="stylesheet" href="./css/estiloejercicios.css">
+    <script src="./JS/validarejercicios.js"></script>
+</head>
+<body>
+    <h1>Ejercicios de Algoritmos JS (Primera Parte)</h1>
+    <hr>
+
+    <div>
+        <h3>1. Inversión Bancaria (2%)</h3>
+        <input type="number" id="capital" placeholder="Capital a invertir">
+        <button onclick="calcularInversion()">Calcular</button>
+        <p id="res1"></p>
+    </div>
+
+    <div>
+        <h3>2. Sueldo y Comisiones (10%)</h3>
+        <input type="number" id="sueldoBase" placeholder="Sueldo base">
+        <input type="number" id="v1" placeholder="Venta 1">
+        <input type="number" id="v2" placeholder="Venta 2">
+        <input type="number" id="v3" placeholder="Venta 3">
+        <button onclick="calcularSueldo()">Calcular</button>
+        <p id="res2"></p>
+    </div>
+
+    <div>
+        <h3>3. Descuento en Tienda (15%)</h3>
+        <input type="number" id="compra" placeholder="Total de la compra">
+        <button onclick="calcularDescuento()">Calcular</button>
+        <p id="res3"></p>
+    </div>
+
+    <div>
+        <h3>4. Calificación Final</h3>
+        <p>Notas del 0 al 10:</p>
+        <input type="number" id="p1" placeholder="Parcial 1" max="10">
+        <input type="number" id="p2" placeholder="Parcial 2" max="10">
+        <input type="number" id="p3" placeholder="Parcial 3" max="10">
+        <input type="number" id="examen" placeholder="Examen Final" max="10">
+        <input type="number" id="trabajo" placeholder="Trabajo Final" max="10">
+        <button onclick="calcularNota()">Calcular</button>
+        <p id="res4"></p>
+    </div>
+
+    <div>
+        <h3>5. Porcentaje de Estudiantes</h3>
+        <input type="number" id="hombres" placeholder="Cantidad hombres">
+        <input type="number" id="mujeres" placeholder="Cantidad mujeres">
+        <button onclick="calcularPorcentajes()">Calcular</button>
+        <p id="res5"></p>
+    </div>
+
+    <div>
+        <h3>6. Calcular Edad</h3>
+        <input type="date" id="fecha">
+        <button onclick="calcularEdad()">Calcular</button>
+        <p id="res6"></p>
+    </div>
+
+    <footer>
+        <h2>Serrano Jiménez Jostin Kiroshi</h2>
+    </footer>
+</body>
+</html>
