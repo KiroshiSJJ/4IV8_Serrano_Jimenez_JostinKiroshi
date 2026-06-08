@@ -44,7 +44,6 @@ header p {
     margin-top: 5px;
 }
 
-/* Dashboard */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -59,7 +58,6 @@ header p {
     }
 }
 
-/* Estilos Bloques */
 .card {
     background-color: var(--bg-tarjetas);
     border: 1px solid var(--borde);
@@ -137,7 +135,6 @@ button:active {
 }
 .btn-danger:hover { background-color: #b91c1c; }
 
-/* Tablas Panel de Control */
 .table-responsive {
     overflow-x: auto;
 }
@@ -182,7 +179,7 @@ tr:hover {
     display: block;
 }
 
-/* Estilos Editar*/
+/* Estilos-Editar*/
 .btn-warning {
     background-color: #f59e0b;
     padding: 6px 12px;
@@ -205,4 +202,51 @@ tr:hover {
 }
 .btn-edit-mode:hover {
     background-color: #059669 !important;
+}
+
+/* Estilo barra superior */
+.nav-tabs-container {
+    max-width: 1200px;
+    margin: 0 auto 25px auto;
+    display: flex;
+    gap: 10px;
+    background-color: var(--bg-tarjetas);
+    border: 1px solid var(--borde);
+    padding: 6px;
+    border-radius: 10px;
+}
+
+.nav-tabs-container .tab-link {
+    background-color: transparent;
+    color: var(--texto-mutated, var(--texto-mutado));
+    width: auto;
+    padding: 10px 22px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs-container .tab-link:hover {
+    color: var(--texto-blanco);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.nav-tabs-container .tab-link.active {
+    background-color: var(--azul-nfl);
+    color: var(--texto-blanco);
+}
+
+.vista-flotante {
+    display: none;
+    width: 100%;
+}
+
+.vista-flotante.active {
+    display: block;
+    animation: fadeVista 0.2s ease-in-out;
+}
+
+@keyframes fadeVista {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
