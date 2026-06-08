@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard NFL - Panel de Control</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>CRUD Americano - Serrano</h1>
+        <p>Gestión de Equipos, Jugadores, Estadios y Partidos</p>
+    </header>
+
+    <main class="container">
+        
+        <section class="card">
+            <h2>Registrar/Editar Equipo</h2>
+            <form id="form-equipos">
+                <div class="form-group">
+                    <label>Nombre del Equipo</label>
+                    <input type="text" id="eq-nombre" required maxlength="30" pattern="^[A-Za-zÁéíóúáéíóúÑñ\s\-]+$" title="Solo letras, espacios o guiones.">
+                </div>
+                <div class="form-group">
+                    <label>Ciudad</label>
+                    <input type="text" id="eq-ciudad" required maxlength="30" pattern="^[A-Za-zÁéíóúáéíóúÑñ\s\-]+$" title="Solo letras y espacios.">
+                </div>
+                <div class="form-group">
+                    <label>Conferencia</label>
+                    <input type="text" id="eq-conferencia" required maxlength="10" pattern="^[A-Za-z\s]+$" title="Ingresa la conferencia usando solo letras (Ej: AFC, NFC, Norte).">
+                </div>
+                <button type="submit" id="btn-equipos">Guardar Equipo</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Lista de Equipos</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Ciudad</th>
+                            <th>Conferencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-equipos"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Registrar/Editar Jugador</h2>
+            <form id="form-jugadores">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="jug-nombre" required maxlength="40" pattern="^[A-Za-zÁéíóúáéíóúÑñ\s]+$" title="Solo se permiten letras.">
+                </div>
+                <div class="form-group">
+                    <label>Posición</label>
+                    <select id="jug-posicion" required>
+                        <option value="">-- Selecciona una Posición --</option>
+                        <optgroup label="Ofensiva">
+                            <option value="QB">Quarterback (QB)</option>
+                            <option value="RB">Running Back (RB)</option>
+                            <option value="WR">Wide Receiver (WR)</option>
+                            <option value="TE">Tight End (TE)</option>
+                            <option value="O-LINE">Línea Ofensiva (O-Line)</option>
+                        </optgroup>
+                        <optgroup label="Defensiva">
+                            <option value="D-LINE">Línea Defensiva (D-Line)</option>
+                            <option value="LB">Linebacker (LB)</option>
+                            <option value="CB">Cornerback (CB)</option>
+                            <option value="S">Safety (S)</option>
+                        </optgroup>
+                        <optgroup label="Equipos Especiales">
+                            <option value="K/P">Pateador / Despeje (K/P)</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Número de Jersey (0 - 99)</label>
+                    <input type="number" id="jug-jersey" required min="0" max="99" oninput="if(this.value.length > 2) this.value = this.value.slice(0,2);">
+                </div>
+                <button type="submit" id="btn-jugadores">Guardar Jugador</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Lista de Jugadores</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Posición</th>
+                            <th>Jersey</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-jugadores"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Registrar/Editar Estadio</h2>
+            <form id="form-estadios">
+                <div class="form-group">
+                    <label>Nombre del Estadio</label>
+                    <input type="text" id="est-nombre" required maxlength="40" pattern="^[A-Za-z0-9ÁéíóúáéíóúÑñ\s\-]+$">
+                </div>
+                <div class="form-group">
+                    <label>Capacidad</label>
+                    <input type="number" id="est-capacidad" required min="100" max="150000" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);">
+                </div>
+                <div class="form-group">
+                    <label>Ciudad</label>
+                    <input type="text" id="est-ciudad" required maxlength="30" pattern="^[A-Za-zÁéíóúáéíóúÑñ\s\-]+$">
+                </div>
+                <button type="submit" id="btn-estadios">Guardar Estadio</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Lista de Estadios</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Estadio</th>
+                            <th>Capacidad</th>
+                            <th>Ciudad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-estadios"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Registrar/Editar Partido</h2>
+            <form id="form-partidos">
+                <div class="form-group">
+                    <label>Equipo Local</label>
+                    <input type="text" id="par-local" required maxlength="30" pattern="^[A-Za-zÁéíóúáéíóúÑñ\s]+$">
+                </div>
+                <div class="form-group">
+                    <label>Equipo Visitante</label>
+                    <input type="text" id="par-visitante" required maxlength="30" pattern="^[A-Za-zÁéíóúáéíóúÑñ\s]+$">
+                </div>
+                <div class="form-group">
+                    <label>Marcador Final (Ej: 24-17)</label>
+                    <input type="text" id="par-marcador" required maxlength="7" pattern="^\d{1,3}-\d{1,3}$">
+                </div>
+                <button type="submit" id="btn-partidos">Guardar Partido</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Lista de Partidos</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Local</th>
+                            <th>Visitante</th>
+                            <th>Marcador</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-partidos"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
