@@ -15,42 +15,67 @@ const tPartidos = document.getElementById('tabla-partidos');
 const fPartidos = document.getElementById('form-partidos');
 const btnPartidos = document.getElementById('btn-partidos');
 
-// Variables
+// Variables de control de estado
 let editandoEquipoId = null;
 let editandoJugadorId = null;
 let editandoEstadioId = null;
 let editandoPartidoId = null;
 
+// ==========================================================================
 // 1. APARTADO: EQUIPOS
+// ==========================================================================
 async function cargarEquipos() {
     try {
         const res = await fetch('/api/equipos');
         const datos = await res.json();
         tEquipos.innerHTML = '';
-        datos.forEach(eq => {
+        
+        // Elementos select de otros módulos para mantenerlos sincronizados
+        const selectJugEquipo = document.getElementById('jug-equipo');
+        const selectParLocal = document.getElementById('par-local');
+        const selectParVisitante = document.getElementById('par-visitante');
+        
+        let opcionesHtml = '<option value="">-- Selecciona un Equipo --</option>';
+        let opcionesLocalHtml = '<option value="">-- Selecciona Equipo Local --</option>';
+        let opcionesVisitaHtml = '<option value="">-- Selecciona Equipo Visitante --</option>';
+
+        datos.forEach((eq, index) => {
+            // Se evalúa eq.id_equipo para empatar con tu Primary Key de SQL
+            const idReal = eq.id_equipo || eq.id;
+            
             tEquipos.innerHTML += `
                 <tr>
-                    <td>${eq.id}</td>
-                    <td>${eq.nombre}</td>
+                    <td>${index + 1}</td>
+                    <td><strong>${eq.nombre}</strong></td>
                     <td>${eq.ciudad}</td>
-                    <td>${eq.conferencia}</td>
+                    <td>${eq.categoria}</td>
                     <td>
-                        <button class="btn-warning" onclick="prepararEditarEquipo(${eq.id}, '${eq.nombre}', '${eq.ciudad}', '${eq.conferencia}')">Editar</button>
-                        <button class="btn-danger" onclick="eliminarEquipo(${eq.id})">Eliminar</button>
+                        <button class="btn-warning" onclick="prepararEditarEquipo(${idReal}, '${eq.nombre}', '${eq.ciudad}', '${eq.categoria}')">Editar</button>
+                        <button class="btn-danger" onclick="eliminarEquipo(${idReal})">Eliminar</button>
                     </td>
                 </tr>
             `;
+            // Sincronizamos las llaves primarias correctas en las listas desplegables
+            opcionesHtml += `<option value="${idReal}">${eq.nombre}</option>`;
+            opcionesLocalHtml += `<option value="${idReal}">${eq.nombre}</option>`;
+            opcionesVisitaHtml += `<option value="${idReal}">${eq.nombre}</option>`;
         });
+
+        // Inyectamos las listas de equipos vivos en sus respectivos formularios automáticamente
+        if(selectJugEquipo) selectJugEquipo.innerHTML = opcionesHtml;
+        if(selectParLocal) selectParLocal.innerHTML = opcionesLocalHtml;
+        if(selectParVisitante) selectParVisitante.innerHTML = opcionesVisitaHtml;
+
     } catch (err) {
         console.error("Error al cargar equipos:", err);
     }
 }
 
-function prepararEditarEquipo(id, nombre, ciudad, conferencia) {
+function prepararEditarEquipo(id, nombre, ciudad, categoria) {
     editandoEquipoId = id;
     document.getElementById('eq-nombre').value = nombre;
     document.getElementById('eq-ciudad').value = ciudad;
-    document.getElementById('eq-conferencia').value = conferencia;
+    document.getElementById('eq-categoria').value = categoria;
     btnEquipos.textContent = "Actualizar Equipo";
     btnEquipos.classList.add('btn-edit-mode');
 }
@@ -59,10 +84,10 @@ fEquipos.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('eq-nombre').value.trim();
     const city = document.getElementById('eq-ciudad').value.trim();
-    const conf = document.getElementById('eq-conferencia').value.trim();
+    const cat = document.getElementById('eq-categoria').value.trim();
 
-    if (/\d/.test(nombre) || /\d/.test(city) || /\d/.test(conf)) {
-        alert("El nombre, la ciudad y la conferencia del equipo NO pueden contener números.");
+    if (/\d/.test(nombre) || /\d/.test(city) || /\d/.test(cat)) {
+        alert("El nombre, la ciudad y la categoría del equipo NO pueden contener números.");
         return;
     }
 
@@ -71,7 +96,7 @@ fEquipos.addEventListener('submit', async (e) => {
         await fetch(`/api/equipos/${editandoEquipoId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, ciudad: city, conferencia: conf })
+            body: JSON.stringify({ nombre, ciudad: city, categoria: cat })
         });
         editandoEquipoId = null;
         btnEquipos.textContent = "Guardar Equipo";
@@ -81,35 +106,41 @@ fEquipos.addEventListener('submit', async (e) => {
         await fetch('/api/equipos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, ciudad: city, conferencia: conf })
+            body: JSON.stringify({ nombre, ciudad: city, categoria: cat })
         });
     }
     fEquipos.reset();
     cargarEquipos();
+    cargarJugadores();
+    cargarPartidos();
 });
 
 async function eliminarEquipo(id) {
     if (confirm('¿Seguro que deseas eliminar este equipo?')) {
         await fetch(`/api/equipos/${id}`, { method: 'DELETE' });
         cargarEquipos();
+        cargarJugadores();
     }
 }
 
+// ==========================================================================
 // 2. APARTADO: JUGADORES
+// ==========================================================================
 async function cargarJugadores() {
     try {
         const res = await fetch('/api/jugadores');
         const datos = await res.json();
         tJugadores.innerHTML = '';
-        datos.forEach(jug => {
+        datos.forEach((jug, index) => {
             tJugadores.innerHTML += `
                 <tr>
-                    <td>${jug.id}</td>
-                    <td>${jug.nombre}</td>
+                    <td>${index + 1}</td>
+                    <td><strong>${jug.nombre}</strong></td>
+                    <td>${jug.equipoNombre || 'Sin asignar'}</td>
                     <td>${jug.posicion}</td>
-                    <td>${jug.jersey}</td>
+                    <td>#${jug.jersey}</td>
                     <td>
-                        <button class="btn-warning" onclick="prepararEditarJugador(${jug.id}, '${jug.nombre}', '${jug.posicion}', ${jug.jersey})">Editar</button>
+                        <button class="btn-warning" onclick="prepararEditarJugador(${jug.id}, '${jug.nombre}', '${jug.id_equipo || ''}', '${jug.posicion}', ${jug.jersey})">Editar</button>
                         <button class="btn-danger" onclick="eliminarJugador(${jug.id})">Eliminar</button>
                     </td>
                 </tr>
@@ -120,9 +151,10 @@ async function cargarJugadores() {
     }
 }
 
-function prepararEditarJugador(id, nombre, posicion, jersey) {
+function prepararEditarJugador(id, nombre, idEquipo, posicion, jersey) {
     editandoJugadorId = id;
     document.getElementById('jug-nombre').value = nombre;
+    document.getElementById('jug-equipo').value = idEquipo;
     document.getElementById('jug-posicion').value = posicion;
     document.getElementById('jug-jersey').value = jersey;
     btnJugadores.textContent = "Actualizar Jugador";
@@ -132,6 +164,7 @@ function prepararEditarJugador(id, nombre, posicion, jersey) {
 fJugadores.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('jug-nombre').value.trim();
+    const id_equipo = document.getElementById('jug-equipo').value;
     const posicion = document.getElementById('jug-posicion').value;
     const jersey = document.getElementById('jug-jersey').value;
 
@@ -146,7 +179,7 @@ fJugadores.addEventListener('submit', async (e) => {
         await fetch(`/api/jugadores/${editandoJugadorId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, posicion, jersey: numJersey })
+            body: JSON.stringify({ nombre, id_equipo: parseInt(id_equipo), posicion, jersey: numJersey })
         });
         editandoJugadorId = null;
         btnJugadores.textContent = "Guardar Jugador";
@@ -156,7 +189,7 @@ fJugadores.addEventListener('submit', async (e) => {
         await fetch('/api/jugadores', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, posicion, jersey: numJersey })
+            body: JSON.stringify({ nombre, id_equipo: parseInt(id_equipo), posicion, jersey: numJersey })
         });
     }
     fJugadores.reset();
@@ -170,17 +203,19 @@ async function eliminarJugador(id) {
     }
 }
 
-// 3. APARTADO: Estadios
+// ==========================================================================
+// 3. APARTADO: ESTADIOS
+// ==========================================================================
 async function cargarEstadios() {
     try {
         const res = await fetch('/api/estadios');
         const datos = await res.json();
         tEstadios.innerHTML = '';
-        datos.forEach(est => {
+        datos.forEach((est, index) => {
             tEstadios.innerHTML += `
                 <tr>
-                    <td>${est.id}</td>
-                    <td>${est.nombre}</td>
+                    <td>${index + 1}</td>
+                    <td><strong>${est.nombre}</strong></td>
                     <td>${est.capacidad.toLocaleString()}</td>
                     <td>${est.ciudad}</td>
                     <td>
@@ -245,20 +280,21 @@ async function eliminarEstadio(id) {
     }
 }
 
-
-// 4. APARTADO: Partidos
+// ==========================================================================
+// 4. APARTADO: PARTIDOS
+// ==========================================================================
 async function cargarPartidos() {
     try {
         const res = await fetch('/api/partidos');
         const datos = await res.json();
         tPartidos.innerHTML = '';
-        datos.forEach(par => {
+        datos.forEach((par, index) => {
             tPartidos.innerHTML += `
                 <tr>
-                    <td>${par.id}</td>
-                    <td>${par.local}</td>
-                    <td>${par.visitante}</td>
-                    <td>${par.marcador}</td>
+                    <td>${index + 1}</td>
+                    <td style="color:#bfdbfe;">${par.local}</td>
+                    <td style="color:#fca5a5;">${par.visitante}</td>
+                    <td><strong>${par.marcador}</strong></td>
                     <td>
                         <button class="btn-warning" onclick="prepararEditarPartido(${par.id}, '${par.local}', '${par.visitante}', '${par.marcador}')">Editar</button>
                         <button class="btn-danger" onclick="eliminarPartido(${par.id})">Eliminar</button>
@@ -282,12 +318,12 @@ function prepararEditarPartido(id, local, visitante, marcador) {
 
 fPartidos.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const local = document.getElementById('par-local').value.trim();
-    const visitante = document.getElementById('par-visitante').value.trim();
+    const local = document.getElementById('par-local').value;
+    const visitante = document.getElementById('par-visitante').value;
     const marcador = document.getElementById('par-marcador').value.trim();
 
-    if (/\d/.test(local) || /\d/.test(visitante)) {
-        alert("Los nombres de los equipos no pueden contener números.");
+    if (local === visitante) {
+        alert("Validación incorrecta: Un equipo no puede jugar contra sí mismo.");
         return;
     }
 
@@ -302,7 +338,7 @@ fPartidos.addEventListener('submit', async (e) => {
         btnPartidos.textContent = "Guardar Partido";
         btnPartidos.classList.remove('btn-edit-mode');
     } else {
-        // Momo Registrar (POST)
+        // Modo Registrar (POST)
         await fetch('/api/partidos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -320,6 +356,7 @@ async function eliminarPartido(id) {
     }
 }
 
+// INICIALIZACIÓN DE CARGA AL CARGAR LA PÁGINA
 window.onload = () => {
     cargarEquipos();
     cargarJugadores();
