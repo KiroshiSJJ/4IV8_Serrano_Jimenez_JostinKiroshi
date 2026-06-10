@@ -1,47 +1,49 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../DB/database');
+const mysql = require('mysql2');
 
-// Obtener estadios
-router.get('/', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM estadios');
-        res.json(rows);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+const db = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'americano_db',
+    waitForConnections: true,
+    connectionLimit: 10
 });
 
-// Registrar estadio
-router.post('/', async (req, res) => {
+router.get('/', (req, res) => {
+    const query = "SELECT id_estadio AS id, nombre, capacidad, ciudad FROM estadios";
+    db.query(query, (err, resultados) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(resultados);
+    });
+});
+
+router.post('/', (req, res) => {
     const { nombre, capacidad, ciudad } = req.body;
-    try {
-        await db.query('INSERT INTO estadios (nombre, capacidad, ciudad) VALUES (?, ?, ?)', [nombre, capacidad, ciudad]);
-        res.json({ mensaje: 'Estadio registrado' });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+    const query = "INSERT INTO estadios (nombre, capacidad, ciudad) VALUES (?, ?, ?)";
+    db.query(query, [nombre, capacidad, ciudad], (err, resultado) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ status: "success", id: resultado.insertId });
+    });
 });
 
-// Editar estadio
-router.put('/:id', async (req, res) => {
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
     const { nombre, capacidad, ciudad } = req.body;
-    try {
-        await db.query('UPDATE estadios SET nombre=?, capacidad=?, ciudad=? WHERE id=?', [nombre, capacidad, ciudad, req.params.id]);
-        res.json({ mensaje: 'Estadio modificado' });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+    const query = "UPDATE estadios SET nombre = ?, capacidad = ?, ciudad = ? WHERE id_estadio = ?";
+    db.query(query, [nombre, capacidad, ciudad, id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "updated" });
+    });
 });
 
-// Borrar estadio
-router.delete('/:id', async (req, res) => {
-    try {
-        await db.query('DELETE FROM estadios WHERE id=?', [req.params.id]);
-        res.json({ mensaje: 'Estadio eliminado' });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    db.query("DELETE FROM estadios WHERE id_estadio = ?", [id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "deleted" });
+    });
 });
 
 module.exports = router;

@@ -1,47 +1,71 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../DB/database'); // Conexion a la base de datos
+const mysql = require('mysql2');
 
-// Obtener todos los equipos
-router.get('/', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM equipos');
-        res.json(rows);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+const db = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'americano_db',
+    waitForConnections: true,
+    connectionLimit: 10
 });
 
-// Registrar un equipo nuevo
-router.post('/', async (req, res) => {
-    const { nombre, ciudad, conferencia } = req.body;
-    try {
-        await db.query('INSERT INTO equipos (nombre, ciudad, conferencia) VALUES (?, ?, ?)', [nombre, ciudad, conferencia]);
-        res.json({ mensaje: 'Equipo registrado' });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+router.get('/', (req, res) => {
+    db.query("SELECT id_equipo AS id, nombre, ciudad, categoria FROM equipos", (err, resultados) => {
+        if (err) {
+            console.error("Error SQL en GET:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(resultados);
+    });
 });
 
-// Actualizar datos de un equipo
-router.put('/:id', async (req, res) => {
-    const { nombre, ciudad, conferencia } = req.body;
-    try {
-        await db.query('UPDATE equipos SET nombre=?, ciudad=?, conferencia=? WHERE id=?', [nombre, ciudad, conferencia, req.params.id]);
-        res.json({ mensaje: 'Equipo modificado' });
-    } catch (err) {
-        res.status(500).send(err.message);
+router.post('/', (req, res) => {
+    const { nombre, ciudad, categoria } = req.body;
+
+    if (!nombre || !ciudad || !categoria) {
+        return res.status(400).json({ error: "Todos los campos son obligatorios." });
     }
+
+    db.query("SELECT id_equipo FROM equipos WHERE nombre = ?", [nombre.trim()], (err, filas) => {
+        if (err) {
+            console.error("Error SQL en POST:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
+
+        if (filas.length > 0) {
+            return res.status(400).json({ error: `El equipo '${nombre}' ya existe.` });
+        }
+
+        const query = "INSERT INTO equipos (nombre, ciudad, categoria) VALUES (?, ?, ?)";
+        db.query(query, [nombre, ciudad, categoria], (err, resultado) => {
+            if (err) {
+                console.error("Error SQL en POST:", err.message);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ status: "success", id: resultado.insertId });
+        });
+    });
 });
 
-// Eliminar un equipo
-router.delete('/:id', async (req, res) => {
-    try {
-        await db.query('DELETE FROM equipos WHERE id=?', [req.params.id]);
-        res.json({ mensaje: 'Equipo eliminado' });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const { nombre, ciudad, categoria } = req.body;
+
+    const query = "UPDATE equipos SET nombre = ?, ciudad = ?, categoria = ? WHERE id_equipo = ?";
+    db.query(query, [nombre, ciudad, categoria, id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "updated" });
+    });
+});
+
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    db.query("DELETE FROM equipos WHERE id_equipo = ?", [id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "deleted" });
+    });
 });
 
 module.exports = router;
