@@ -1,14 +1,16 @@
-const mysql = require('mysq12');
+const mysql = require('mysql2');
 
-const poll = mysql.createPoll({
-    host: 'localhost',
-    user: 'root',
-    password: 'n0m3l0',
-    databse: 'practicacrud',
-    waitForConnection: 'true',
-    ConnectionLimit: 10,
-    queueLimit: 0
+//creamos la conexion
+
+const pool = mysql.createPool({
+    host : 'localhost',
+    user : 'root',
+    password : 'n0m3l0',
+    database : 'practicacrud',
+    waitForConnections : true,
+    connectionLimit : 10,
+    queueLimit : 0
 });
 
-//la esportamos para poder usarla
+//la exportamos para poder usuarla
 module.exports = pool.promise();
